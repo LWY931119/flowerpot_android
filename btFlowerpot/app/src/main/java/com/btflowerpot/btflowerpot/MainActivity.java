@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,6 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.btflowerpot.btflowerpot.fragments.page_adapter;
+import com.btflowerpot.btflowerpot.netWork.connection;
+
+import java.net.URLEncoder;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,7 +42,10 @@ public class MainActivity extends AppCompatActivity
 
     private   page_adapter adapter;
     private ViewPager viewPager;
+    private static String TAG = "MainActivity";
 
+    private View navigationView_headerView;
+    private TextView userNameTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +68,11 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        //初始化侧边菜单栏
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView_headerView = navigationView.getHeaderView(0);
+        userNameTextView = (TextView)navigationView_headerView.findViewById(R.id.userNameTextView);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Tab 1"));
@@ -93,7 +103,22 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+    public synchronized void onPause() {
+        super.onPause();
+         Log.e(TAG, "-MainActivity ON PAUSE -");
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+         Log.e(TAG, "-- MainActivity ON STOP --");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, "--- MainActivity ON DESTROY ---");
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -122,6 +147,19 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camara) {
             // Handle the camera action
+            SharedPreferences mySharedPreferences=getSharedPreferences("UserInfo",Activity.MODE_WORLD_READABLE+Activity.MODE_WORLD_WRITEABLE );
+            String name = mySharedPreferences.getString("name", null);
+            String password = mySharedPreferences.getString("password",null);
+            if(name == null && password == null){
+                Log.i("MainActivity","start LoginActivity");
+                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                startActivity(intent);
+            }
+            else{
+                new Thread(LoginTask).start();
+
+
+            }
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -138,6 +176,58 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    Runnable LoginTask = new Runnable() {
 
+        @Override
+        public void run() {
+            SharedPreferences mySharedPreferences=getSharedPreferences("UserInfo",Activity.MODE_WORLD_READABLE+Activity.MODE_WORLD_WRITEABLE );
+            String name = mySharedPreferences.getString("name", null);
+            String password = mySharedPreferences.getString("password",null);
+            int result = 0;
+            try {
+                // Simulate network access.
+                String data = "user_name=" + URLEncoder.encode(name, "utf-8") + "&user_password="+ URLEncoder.encode(password,"utf-8");
+                String url = "http://192.168.191.1:8000/login_regest/?"+ data;
+                Log.i("MainActivity",url);
+                result = connection.Login_Regest(url);
+            } catch (InterruptedException e) {
+                Log.i("MainActivity","login network error");
+            }catch (Exception e) {
+                e.printStackTrace();
+                Log.i("MainActivity", "login network error");
+            }
+
+            Message msg = new Message();
+            Bundle data = new Bundle();
+            data.putInt("LoginResult", result);
+            data.putString("name",name);
+            msg.setData(data);
+            LoginHandler.sendMessage(msg);
+        }
+    };
+    Handler LoginHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle data = msg.getData();
+            int result = data.getInt("LoginResult");
+            String name = data.getString("name");
+            switch (result) {
+                case 0:
+                    Log.e("MainActivity", "login Unknown error");
+                    break;
+                case 1:
+                    Log.i("MainActivity", "already Login");
+                    userNameTextView.setText(name);
+                    break;
+                case 2:
+                    Log.e("MainActivity", "login failed");
+                    Log.i("MainActivity", "start LoginActivity");
+                    Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+        }
+    };
 
 }

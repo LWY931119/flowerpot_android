@@ -4,6 +4,9 @@
 
     package="com.btflowerpot.btflowerpot" >
     <uses-sdk tools:overrideLibrary="com.gc.materialdesign"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -23,6 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".LoginActivity"
+            android:label="Login" />
         <activity android:name=".DeviceListActivity"
             android:label="@string/select_device"
             android:theme="@android:style/Theme.Dialog"

@@ -201,13 +201,17 @@ public class BluetoothChatService {
      */
     private void connectionLost() {
         setState(STATE_LISTEN);
-
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(get_current_sensor.MESSAGE_TOAST);
-        Bundle bundle = new Bundle();
-        bundle.putString(get_current_sensor.TOAST, "Device connection was lost");
-        msg.setData(bundle);
-        mHandler.sendMessage(msg);
+        try {
+            Message msg = mHandler.obtainMessage(get_current_sensor.MESSAGE_TOAST);
+            Bundle bundle = new Bundle();
+            bundle.putString(get_current_sensor.TOAST, "Device connection was lost");
+            msg.setData(bundle);
+            mHandler.sendMessage(msg);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     /**

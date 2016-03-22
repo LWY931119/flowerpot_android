@@ -41,15 +41,10 @@ public class connection {
         return connection;
 
     }
-    public HttpPost gethttPost(String uripath)
-    {
-        HttpPost httpPost=new HttpPost(URLVAR+uripath);
 
-        System.out.println("@@@@@@@"+URLVAR+uripath);
-        return httpPost;
-    }
 
-    public  static int UPLoadSensorDatas(String path,String datas) throws Exception{
+    public  static int UPLoadSensorDatas(String datas) throws Exception{
+        String path = "http://192.168.191.1:8000/upload_sensortext/";
         URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         // 设置连接超时为5秒

@@ -58,7 +58,7 @@ public class get_current_sensor extends Fragment {
     //DataBase
     private BTDataBaseHelper dbHelper;
     //UI上的零件
-    private TextView mTitle;
+    private static TextView mTitle;
     private TableRow settime_row;
     private TableRow gettime_row;
     private TableRow Tem_row ;
@@ -80,11 +80,11 @@ public class get_current_sensor extends Fragment {
     private TextView Lig_text;
 
     //传感器数据的标签
-    private String tem = "Tem";
-    private String moi = "Moi";
-    private String lig = "Lig";
-    private String co2 = "SEN0159";
-    private String text = "text";
+    private static String tem = "Tem";
+    private static String moi = "Moi";
+    private static String lig = "Lig";
+    private static String co2 = "SEN0159";
+    private static String text = "text";
     public Button t;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -186,6 +186,10 @@ public class get_current_sensor extends Fragment {
         // Stop the Bluetooth chat services
         if (mChatService != null) mChatService.stop();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
+    }
+    public void onDetach(){
+        super.onDetach();
+        Log.e(TAG, "--- ON Detach ---");
     }
     private void setupChat() {
         Log.d(TAG, "setupChat()");
@@ -313,7 +317,7 @@ public class get_current_sensor extends Fragment {
         }
         return false;
     }
-    private final Handler mHandler = new Handler() {
+    private  final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -379,8 +383,15 @@ public class get_current_sensor extends Fragment {
                             + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     break;
                 case MESSAGE_TOAST:
-                    Toast.makeText(getActivity(), msg.getData().getString(TOAST),
-                            Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, msg.getData().getString(TOAST));
+                    try {
+                        Toast.makeText(getActivity(), msg.getData().getString(TOAST),
+                                Toast.LENGTH_SHORT).show();
+                        Log.i(TAG, msg.getData().getString(TOAST));
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
                     break;
             }
         }

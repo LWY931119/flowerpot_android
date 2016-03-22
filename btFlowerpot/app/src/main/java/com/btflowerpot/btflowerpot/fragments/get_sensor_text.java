@@ -228,8 +228,8 @@ public class get_sensor_text extends Fragment {
                 connection_body.put("data",datas);
                 Log.e("lllllll", connection_body.toString());
                 // Simulate network access
-                String url = "http://192.168.191.1:8000/upload_sensortext/";
-                result = connection.UPLoadSensorDatas(url,connection_body.toString());
+
+                result = connection.UPLoadSensorDatas(connection_body.toString());
 
                 //Thread.sleep(2000);
             } catch (InterruptedException e) {
