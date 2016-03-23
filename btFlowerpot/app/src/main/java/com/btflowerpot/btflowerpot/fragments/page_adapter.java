@@ -25,6 +25,9 @@ public class page_adapter extends FragmentStatePagerAdapter {
             case 1:
                 get_sensor_text tab2 = new get_sensor_text();
                 return tab2;
+            case 2:
+                get_sensor_chart tab3 = new get_sensor_chart();
+                return tab3;
             default:
                 return null;
         }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout
+    android:id="@+id/get_sensor_chart_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fragmentBackground"
+    android:gravity="bottom"
+    android:orientation="horizontal"
+    android:rowCount="4"
+    android:columnCount="4" >
+    <ImageButton
+
+        android:layout_marginLeft="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/left"
+        android:id="@+id/imageButton"
+        android:layout_rowSpan="1"
+        android:layout_columnSpan="1" />
+    <TextView
+
+        android:layout_gravity="center_vertical"
+        android:text="前一天"
+        android:id="@+id/Left"
+        android:layout_rowSpan="1"
+        android:layout_columnSpan="1" />
+    <TextView
+        android:layout_gravity="center_vertical|end"
+        android:text="后一天"
+        android:id="@+id/Right"
+        android:layout_rowSpan="1"
+        android:layout_columnSpan="1" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/right"
+        android:id="@+id/imageButton2"
+        android:layout_rowSpan="1"
+        android:layout_columnSpan="1" />
+    <lecho.lib.hellocharts.view.LineChartView
+
+        android:id="@+id/chart"
+        android:layout_rowSpan="1"
+        android:layout_columnSpan="4"
+         />
+
+</GridLayout>

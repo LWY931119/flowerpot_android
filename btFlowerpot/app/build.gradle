@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.btflowerpot.btflowerpot"
-        minSdkVersion 11
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'org.apache.httpcomponents:httpcore:4.4.2'
     compile project(':MaterialDesign')
+    compile files('libs/hellocharts-library-1.5.8.jar')
 }

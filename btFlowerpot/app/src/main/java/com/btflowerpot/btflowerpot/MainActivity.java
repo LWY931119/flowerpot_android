@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
 
     private View navigationView_headerView;
     private TextView userNameTextView;
+    private NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,14 +70,21 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         //初始化侧边菜单栏
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView_headerView = navigationView.getHeaderView(0);
         userNameTextView = (TextView)navigationView_headerView.findViewById(R.id.userNameTextView);
-
+        //设置菜单栏的用户名位置
+        SharedPreferences mySharedPreferences=getSharedPreferences("UserInfo",Activity.MODE_WORLD_READABLE+Activity.MODE_WORLD_WRITEABLE );
+        if(mySharedPreferences.contains("name")) {
+            String name = mySharedPreferences.getString("name", null);
+            userNameTextView.setText(name);
+            navigationView.getMenu().getItem(0).setTitle(name);
+        }
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
+        tabLayout.addTab(tabLayout.newTab().setText("主页"));
+        tabLayout.addTab(tabLayout.newTab().setText("上传文件"));
+        tabLayout.addTab(tabLayout.newTab().setText("历史数据"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -145,7 +153,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camara) {
+        if (id == R.id.nav_Login) {
             // Handle the camera action
             SharedPreferences mySharedPreferences=getSharedPreferences("UserInfo",Activity.MODE_WORLD_READABLE+Activity.MODE_WORLD_WRITEABLE );
             String name = mySharedPreferences.getString("name", null);
@@ -160,7 +168,13 @@ public class MainActivity extends AppCompatActivity
 
 
             }
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_logout) {
+            SharedPreferences mySharedPreferences=getSharedPreferences("UserInfo",Activity.MODE_WORLD_READABLE+Activity.MODE_WORLD_WRITEABLE );
+            SharedPreferences.Editor myEditor = mySharedPreferences.edit();
+            myEditor.clear();
+            myEditor.apply();
+            userNameTextView.setText("请您登录，体验完整功能。");
+            navigationView.getMenu().getItem(0).setTitle("登录");
 
         } else if (id == R.id.nav_slideshow) {
 
