@@ -160,12 +160,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains(".");
+        return email.length() > 3;
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 3;
     }
 
     /**
@@ -289,10 +289,26 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e("login", "Unknown error");
                     return false;
                 case 1:Log.e("login","login success");
+                    String mflowerpots = new String();
+                    try {
+                        String data = "user_name=" + URLEncoder.encode(mEmail, "utf-8");
+                        String url = "http://192.168.191.1:8000/get_flowerpots/?" + data;
+                        int [] flowerpots = connection.URLGet_flowerpot(url);
+                        int i = 0;
+                        for(i = 0;i < flowerpots.length-1;i++){
+                            mflowerpots += flowerpots[i]+",";
+                        }
+                        mflowerpots += flowerpots[i];
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                    Log.i("LOGIN_ACTIVITY", "mflowerpots : "+mflowerpots);
                     SharedPreferences mySharedPreferences=getSharedPreferences("UserInfo",Activity.MODE_WORLD_READABLE+Activity.MODE_WORLD_WRITEABLE );
                     SharedPreferences.Editor editor=mySharedPreferences.edit();
                     editor.putString("name",mEmail);
-                    editor.putString("password",mPassword);
+                    editor.putString("password", mPassword);
+                    editor.putString("flowerpots",mflowerpots);
                     editor.apply();
                     return true;
                 case 2:Log.e("login_register","login failed");
@@ -312,9 +328,8 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
-                //finish();
+                finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

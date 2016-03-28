@@ -1,5 +1,7 @@
 package com.btflowerpot.btflowerpot.fragments;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -180,9 +182,18 @@ public class get_sensor_chart extends Fragment {
     }
     public void IniSpinner(View v){
         //第一步：添加一个下拉列表项的list，这里添加的项就是下拉列表的菜单项
+        String flowerpots = new String();
+        SharedPreferences mySharedPreferences=getActivity().getSharedPreferences("UserInfo", Activity.MODE_WORLD_READABLE + Activity.MODE_WORLD_WRITEABLE);
+        if(mySharedPreferences.contains("flowerpots")) {
+            flowerpots = mySharedPreferences.getString("flowerpots", null);
+        }
+        String[] strarr = flowerpots.split(",");
+        int[] flowerpot_ids = new int[strarr.length];
         pot_list.add("请选择花盆：");
-        pot_list.add("花盆 1");
-        pot_list.add("花盆 2");
+        for(int i=0;i<strarr.length;i++){
+            flowerpot_ids[i]=Integer.parseInt(strarr[i]);
+            pot_list.add("花盆 "+flowerpot_ids[i]);
+        }
         pot_spinner = (Spinner)v.findViewById(R.id.spinner);
         //第二步：为下拉列表定义一个适配器，这里就用到里前面定义的list。
         pot_adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item, pot_list);
