@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    >
+    <ProgressBar
+    android:id="@+id/chart_progress"
+    style="?android:attr/progressBarStyleLarge"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:visibility="gone"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
+    <GridLayout
     android:id="@+id/get_sensor_chart_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -7,9 +21,9 @@
     android:background="@color/fragmentBackground"
     android:gravity="bottom"
     android:orientation="horizontal"
-    android:rowCount="3"
+    android:rowCount="4"
     android:columnCount="4" >
-    <Spinner
+        <Spinner
         android:layout_width="160dp"
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
@@ -20,7 +34,7 @@
         android:gravity="center"
         android:background="@drawable/spinner_background"
         android:contextClickable="false" />
-    <Spinner
+        <Spinner
         android:layout_marginTop="5dp"
         android:layout_width="160dp"
         android:layout_marginLeft="15dp"
@@ -32,50 +46,54 @@
         android:gravity="center"
         android:background="@drawable/spinner_background"
         />
-    <lecho.lib.hellocharts.view.LineChartView
-
+        <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/seneor_chart"
         android:layout_rowSpan="1"
         android:layout_columnSpan="4"
         android:layout_marginTop="10dp"
         android:layout_height="275dp"
         android:layout_width="360dp"/>
-    <ImageButton
-
+        <TextView
+        android:layout_width="360dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:text="前一天"
+        android:id="@+id/chart_time"
+        android:layout_rowSpan="1"
+        android:layout_columnSpan="4"/>
+        <ImageButton
         android:layout_marginLeft="0dp"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@drawable/left"
-        android:id="@+id/imageButton"
+        android:id="@+id/Leftbtn"
         android:layout_rowSpan="1"
         android:layout_columnSpan="1" />
-    <TextView
+        <TextView
         android:layout_width="120dp"
         android:layout_height="60dp"
         android:gravity="center_vertical"
         android:text="前一天"
-        android:id="@+id/Left"
+        android:id="@+id/Lefttxt"
         android:layout_rowSpan="1"
         android:layout_columnSpan="1"/>
-
-    <TextView
+        <TextView
         android:layout_width="120dp"
         android:layout_height="60dp"
         android:gravity="center_vertical|end"
         android:text="后一天"
-        android:id="@+id/Right"
+        android:id="@+id/Righttxt"
         android:layout_rowSpan="1"
         android:layout_columnSpan="1"/>
 
-    <ImageButton
+        <ImageButton
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="end"
         android:src="@drawable/right"
-        android:id="@+id/imageButton2"
+        android:id="@+id/Rightbtn"
         android:layout_rowSpan="1"
         android:layout_columnSpan="1" />
 
-
-
-</GridLayout>
+    </GridLayout>
+</LinearLayout>

@@ -1,7 +1,13 @@
 package com.btflowerpot.btflowerpot.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.media.Image;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,12 +17,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.btflowerpot.btflowerpot.R;
+import com.btflowerpot.btflowerpot.netWork.connection;
 
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
@@ -33,6 +48,13 @@ import lecho.lib.hellocharts.view.LineChartView;
  * Created by Administrator on 2016/3/23.
  */
 public class get_sensor_chart extends Fragment {
+    private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    private GetDatasTask mAuthTask = null;
+    private View mProgressView;
+    private View mChartFormView;
+
+    private ImageButton LeftButton;
+    private ImageButton RightButton;
     private List<String> pot_list = new ArrayList<String>();
     private Spinner pot_spinner;
     private ArrayAdapter<String> pot_adapter;
@@ -41,6 +63,7 @@ public class get_sensor_chart extends Fragment {
     private Spinner sensor_spinner;
     private ArrayAdapter<String> sensor_adapter;
 
+    private TextView chart_time;
     //Element of LineChart
     private LineChartView chart;
     private LineChartData chart_data;
@@ -63,7 +86,13 @@ public class get_sensor_chart extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = null;
         v = inflater.inflate(R.layout.get_sensor_chart, container, false);
-
+        mProgressView = v.findViewById(R.id.chart_progress);
+        mChartFormView = v.findViewById(R.id.get_sensor_chart_view);
+        chart_time = (TextView)v.findViewById(R.id.chart_time);
+        Calendar calendar = Calendar.getInstance();
+        Date mTime = calendar.getTime();
+        String mtime = df.format(mTime);
+        chart_time.setText(mtime);
         IniSpinner(v);
        //LineChart
         chart = (LineChartView) v.findViewById(R.id.seneor_chart);
@@ -80,6 +109,58 @@ public class get_sensor_chart extends Fragment {
 
         resetViewport();
 
+        LeftButton = (ImageButton)v.findViewById(R.id.Leftbtn);
+        RightButton = (ImageButton)v.findViewById(R.id.Rightbtn);
+
+        LeftButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                String CurrentTimeStr = chart_time.getText().toString();
+
+                Date CurrentTimeDate;
+                Calendar CurrentTime;
+                try{
+                    CurrentTimeDate = df.parse(CurrentTimeStr);
+                    CurrentTime = Calendar.getInstance();
+                    CurrentTime.setTime(CurrentTimeDate);
+                    CurrentTime.add(Calendar.DAY_OF_MONTH, -1);
+                    Date mTime = CurrentTime.getTime();
+                    String mtime = df.format(mTime);
+                    chart_time.setText(mtime);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                //showProgress(true);
+                //mAuthTask = new GetDatasTask();
+                //mAuthTask.execute((Void) null);
+
+            }
+        });
+
+        RightButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                String CurrentTimeStr = chart_time.getText().toString();
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                Date CurrentTimeDate;
+                Calendar CurrentTime;
+                try{
+                    CurrentTimeDate = df.parse(CurrentTimeStr);
+                    CurrentTime = Calendar.getInstance();
+                    CurrentTime.setTime(CurrentTimeDate);
+                    CurrentTime.add(Calendar.DAY_OF_MONTH, 1);
+                    Date mTime = CurrentTime.getTime();
+                    String mtime = df.format(mTime);
+                    chart_time.setText(mtime);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                //showProgress(true);
+                //mAuthTask = new GetDatasTask();
+                //mAuthTask.execute((Void) null);
+
+            }
+        });
         return v;
 
     }
@@ -204,11 +285,13 @@ public class get_sensor_chart extends Fragment {
         //第五步：为下拉列表设置各种事件的响应，这个事响应菜单被选中
         pot_spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                // TODO Auto-generated method stub
-                /* 将所选mySpinner 的值带入myTextView 中*/
-               Log.e("get_sensor_chart", "您选择的是：" + pot_adapter.getItem(arg2));
                 /* 将mySpinner 显示*/
                 arg0.setVisibility(View.VISIBLE);
+                /* 将所选mySpinner 的值带入myTextView 中*/
+               Log.e("get_sensor_chart", "您选择的是：" + pot_adapter.getItem(arg2) +
+                       "pot_id: " + pot_spinner.getSelectedItemId() + "sensor_id: " + sensor_spinner.getSelectedItemId());
+
+
             }
             public void onNothingSelected(AdapterView<?> arg0) {
                 // TODO Auto-generated method stub
@@ -237,8 +320,8 @@ public class get_sensor_chart extends Fragment {
         sensor_list.add("请选择传感器：");
         sensor_list.add("温度");
         sensor_list.add("土壤湿度");
-        sensor_list.add("光照强度");
         sensor_list.add("二氧化碳浓度");
+        sensor_list.add("光照强度");
         sensor_spinner = (Spinner)v.findViewById(R.id.spinner2);
         //第二步：为下拉列表定义一个适配器，这里就用到里前面定义的list。
         sensor_adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item, sensor_list);
@@ -249,11 +332,12 @@ public class get_sensor_chart extends Fragment {
         //第五步：为下拉列表设置各种事件的响应，这个事响应菜单被选中
         sensor_spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                // TODO Auto-generated method stub
-                /* 将所选mySpinner 的值带入myTextView 中*/
-                Log.e("get_sensor_chart", "您选择的是：" + sensor_adapter.getItem(arg2));
                 /* 将mySpinner 显示*/
                 arg0.setVisibility(View.VISIBLE);
+                /* 将所选mySpinner 的值带入myTextView 中*/
+                Log.e("get_sensor_chart", "您选择的是：" + sensor_adapter.getItem(arg2) +
+                        "pot_id: " + pot_spinner.getSelectedItemId() + "sensor_id: " + sensor_spinner.getSelectedItemId());
+
             }
             public void onNothingSelected(AdapterView<?> arg0) {
                 // TODO Auto-generated method stub
@@ -273,5 +357,88 @@ public class get_sensor_chart extends Fragment {
                 // TODO Auto-generated method stub
             }
         });
+    }
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mChartFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mChartFormView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mChartFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mChartFormView .setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    /*后台访问网络获取数据的类*/
+    public class GetDatasTask extends AsyncTask<Void, Void, Boolean> {
+        private String mdate;
+        private int mpot;
+        private int msensor;
+        GetDatasTask(String datetime,int pot_id,int sensor_id) {
+            mdate = datetime;
+            mpot = pot_id;
+            msensor = sensor_id;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: attempt authentication against a network service.
+            int result;
+            try {
+                // Simulate network access.
+                String data = "mdate=" + URLEncoder.encode(mdate, "utf-8") + "&flowerpot_id="+ URLEncoder.encode(mpot+"","utf-8")+ "&sensor_id="+ URLEncoder.encode(msensor+"","utf-8");
+                String url = "http://192.168.191.1:8000/get_sensorDatas/?"+ data;
+                result = connection.Login_Regest(url);
+            } catch (InterruptedException e) {
+                return false;
+            }catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+            //TODO:获取数据成功后在图表中显示
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mAuthTask = null;
+            //showProgress(false);
+            if (success) {
+                //finish();
+            } else {
+
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
+            //showProgress(false);
+        }
     }
 }
