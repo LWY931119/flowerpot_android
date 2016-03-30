@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -330,6 +331,9 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
             if (success) {
                 finish();
+                final Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

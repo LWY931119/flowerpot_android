@@ -172,4 +172,30 @@ public class connection {
         }
         return  flowerpot_id;
     }
+    public static String URLGet_sensorDatas(String path) throws Exception {
+        URL url = new URL(path);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        // 设置连接超时为5秒
+        conn.setConnectTimeout(5000);
+        // 设置请求类型为Get类型
+        conn.setRequestMethod("GET");
+        // 判断请求Url是否成功
+        if (conn.getResponseCode() != 200) {
+            throw new RuntimeException("请求url失败");
+        }
+        //Log.e("2222", conn.getOutputStream().toString());
+        InputStreamReader in = new InputStreamReader(conn.getInputStream());
+        // 为输出创建BufferedReader
+        BufferedReader buffer = new BufferedReader(in);
+        String inputLine = null;
+        String response_result = new String();
+        //使用循环来读取获得的数据
+        while (((inputLine = buffer.readLine()) != null))
+        {
+            response_result += inputLine;
+        }
+        in.close();
+        Log.i("NET_Get_sensorDatas", response_result);
+        return response_result;
+    }
 }

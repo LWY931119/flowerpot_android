@@ -88,7 +88,7 @@ public class get_current_sensor extends Fragment {
     public Button t;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //return inflater.inflate(R.layout.get_current_sensor, container, false);
+
         View v = inflater.inflate(R.layout.get_current_sensor, container, false);
 
         Tem_btn = (Button)v.findViewById(R.id.Tem_btn);
@@ -108,19 +108,29 @@ public class get_current_sensor extends Fragment {
             @Override
             public void onCheck(Switch view, boolean check) {
                 if(check){
-                    //Invisible_all_row();
-                    sendMessage("changemode");
+                    //是已连接状态才改变界面
+                    if (mChatService.getState() == BluetoothChatService.STATE_CONNECTED) {
+                        Invisible_all_row();
+                        sendMessage("changemode");
+                    }
                 }
                 else{
-                    //Visible_all_row();
-                    sendMessage("changemode");
+                    if (mChatService.getState() == BluetoothChatService.STATE_CONNECTED) {
+                        Visible_all_row();
+                        sendMessage("changemode");
+                    }
                 }
             }
         });
         return v;
     }
+    void Invisible_all_row(){
+        //TODO:将所有的普通行隐藏，设置行显示
+    }
+    void Visible_all_row(){
+        //TODO:将所有的普通行显示，设置行隐藏
+    }
     public void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         this.dbHelper = new BTDataBaseHelper(this.getContext(), "btDB.db3", 1);

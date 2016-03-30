@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Image;
 import android.os.AsyncTask;
@@ -23,8 +24,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.btflowerpot.btflowerpot.LoginActivity;
 import com.btflowerpot.btflowerpot.R;
 import com.btflowerpot.btflowerpot.netWork.connection;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -71,7 +76,7 @@ public class get_sensor_chart extends Fragment {
     private int maxNumberOfLines = 4;
     private int numberOfPoints = 24;
 
-    float[] sensorDatasTab = new float[numberOfPoints];
+    private float[] sensorDatasTab = new float[numberOfPoints];
     private boolean hasAxes = true;
     private boolean hasAxesNames = true;
     private boolean hasLines = true;
@@ -84,6 +89,11 @@ public class get_sensor_chart extends Fragment {
     private boolean pointsHaveDifferentColor;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        SharedPreferences mySharedPreferences=getActivity().getSharedPreferences("UserInfo", Activity.MODE_WORLD_READABLE + Activity.MODE_WORLD_WRITEABLE);
+        if(!mySharedPreferences.contains("flowerpots")) {
+            Intent intent = new Intent(getActivity(),LoginActivity.class);
+            startActivity(intent);
+        }
         View v = null;
         v = inflater.inflate(R.layout.get_sensor_chart, container, false);
         mProgressView = v.findViewById(R.id.chart_progress);
@@ -99,15 +109,13 @@ public class get_sensor_chart extends Fragment {
         chart.setOnValueTouchListener(new ValueTouchListener());
 
         // 初始化折线图中的值
-        generateValues();
-
         toggleLabels();
-        generateData();
+        generateData("Y");
 
         // Disable viewport recalculations, see toggleCubic() method for more info.
         chart.setViewportCalculationEnabled(false);
 
-        resetViewport();
+        resetViewport(0,100, 23);
 
         LeftButton = (ImageButton)v.findViewById(R.id.Leftbtn);
         RightButton = (ImageButton)v.findViewById(R.id.Rightbtn);
@@ -126,6 +134,12 @@ public class get_sensor_chart extends Fragment {
                     Date mTime = CurrentTime.getTime();
                     String mtime = df.format(mTime);
                     chart_time.setText(mtime);
+                    if(pot_spinner.getSelectedItemId() != 0 && sensor_spinner.getSelectedItemId() != 0){
+                        String CurrentTimeStr1 = chart_time.getText().toString();
+                        showProgress(true);
+                        mAuthTask = new GetDatasTask(CurrentTimeStr1,(int)pot_spinner.getSelectedItemId(), (int)sensor_spinner.getSelectedItemId());
+                        mAuthTask.execute((Void) null);
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -151,6 +165,12 @@ public class get_sensor_chart extends Fragment {
                     Date mTime = CurrentTime.getTime();
                     String mtime = df.format(mTime);
                     chart_time.setText(mtime);
+                    if(pot_spinner.getSelectedItemId() != 0 && sensor_spinner.getSelectedItemId() != 0){
+                        String CurrentTimeStr1 = chart_time.getText().toString();
+                        showProgress(true);
+                        mAuthTask = new GetDatasTask(CurrentTimeStr1,(int)pot_spinner.getSelectedItemId(), (int)sensor_spinner.getSelectedItemId());
+                        mAuthTask.execute((Void) null);
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -164,16 +184,9 @@ public class get_sensor_chart extends Fragment {
         return v;
 
     }
-    /*将折线图上要显示的值放在数组里*/
-    private void generateValues() {
-
-            for (int j = 0; j < numberOfPoints; ++j) {
-                sensorDatasTab[j] = (float) Math.random() * 100f;
-            }
-    }
 
     //设置图表的线
-    private void generateData() {
+    private void generateData(String AxisYName) {
 
         List<Line> lines = new ArrayList<Line>();
         for (int i = 0; i < numberOfLines; ++i) {
@@ -204,8 +217,8 @@ public class get_sensor_chart extends Fragment {
             Axis axisX = new Axis();
             Axis axisY = new Axis().setHasLines(true);
             if (hasAxesNames) {
-                axisX.setName("Axis X");
-                axisY.setName("Axis Y");
+                axisX.setName("小时");
+                axisY.setName(AxisYName);
             }
             chart_data.setAxisXBottom(axisX);
             chart_data.setAxisYLeft(axisY);
@@ -218,7 +231,7 @@ public class get_sensor_chart extends Fragment {
         chart.setLineChartData(chart_data);
 
     }
-    //给每个点旁边写上数值
+    //设置：给每个点旁边写上数值
     private void toggleLabels() {
         hasLabels = !hasLabels;
 
@@ -229,20 +242,14 @@ public class get_sensor_chart extends Fragment {
 
     }
 
-    private void resetViewport() {
-        // Reset viewport height range to (0,100)
-        final Viewport v = new Viewport(chart.getMaximumViewport());
-        v.bottom = 0;
-        v.top = 200;
-        v.left = 0;
-        v.right = 30;
+    private void resetViewport(int bottom ,int topMax,int RightMax) {
 
         final Viewport v1 = new Viewport(chart.getMaximumViewport());
-        v1.bottom = 0;
-        v1.top = 100;
+        v1.bottom = bottom;
+        v1.top = topMax;
         v1.left = 0;
-        v1.right = 23;
-        chart.setMaximumViewport(v);//用于设定chart放大缩小的极限值
+        v1.right = RightMax;
+        chart.setMaximumViewport(v1);//用于设定chart放大缩小的极限值
         chart.setCurrentViewport(v1);//用于设定初始的值
     }
 
@@ -268,6 +275,9 @@ public class get_sensor_chart extends Fragment {
         if(mySharedPreferences.contains("flowerpots")) {
             flowerpots = mySharedPreferences.getString("flowerpots", null);
         }
+        else {
+            flowerpots = "1,2";
+        }
         String[] strarr = flowerpots.split(",");
         int[] flowerpot_ids = new int[strarr.length];
         pot_list.add("请选择花盆：");
@@ -290,7 +300,12 @@ public class get_sensor_chart extends Fragment {
                 /* 将所选mySpinner 的值带入myTextView 中*/
                Log.e("get_sensor_chart", "您选择的是：" + pot_adapter.getItem(arg2) +
                        "pot_id: " + pot_spinner.getSelectedItemId() + "sensor_id: " + sensor_spinner.getSelectedItemId());
-
+                if(pot_spinner.getSelectedItemId() != 0 && sensor_spinner.getSelectedItemId() != 0){
+                    String CurrentTimeStr = chart_time.getText().toString();
+                    showProgress(true);
+                    mAuthTask = new GetDatasTask(CurrentTimeStr,(int)pot_spinner.getSelectedItemId(), (int)sensor_spinner.getSelectedItemId());
+                    mAuthTask.execute((Void) null);
+                }
 
             }
             public void onNothingSelected(AdapterView<?> arg0) {
@@ -337,7 +352,12 @@ public class get_sensor_chart extends Fragment {
                 /* 将所选mySpinner 的值带入myTextView 中*/
                 Log.e("get_sensor_chart", "您选择的是：" + sensor_adapter.getItem(arg2) +
                         "pot_id: " + pot_spinner.getSelectedItemId() + "sensor_id: " + sensor_spinner.getSelectedItemId());
-
+                if(pot_spinner.getSelectedItemId() != 0 && sensor_spinner.getSelectedItemId() != 0){
+                    String CurrentTimeStr = chart_time.getText().toString();
+                    showProgress(true);
+                    mAuthTask = new GetDatasTask(CurrentTimeStr,(int)pot_spinner.getSelectedItemId(), (int)sensor_spinner.getSelectedItemId());
+                    mAuthTask.execute((Void) null);
+                }
             }
             public void onNothingSelected(AdapterView<?> arg0) {
                 // TODO Auto-generated method stub
@@ -399,6 +419,12 @@ public class get_sensor_chart extends Fragment {
         private String mdate;
         private int mpot;
         private int msensor;
+        //private double[] msensorDatas;
+        //private int Datasnum;
+        private float max = -9999;
+        private float min = 9999;
+        private int maxY;
+        private int minY;
         GetDatasTask(String datetime,int pot_id,int sensor_id) {
             mdate = datetime;
             mpot = pot_id;
@@ -408,28 +434,65 @@ public class get_sensor_chart extends Fragment {
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-            int result;
+            String result;
             try {
                 // Simulate network access.
                 String data = "mdate=" + URLEncoder.encode(mdate, "utf-8") + "&flowerpot_id="+ URLEncoder.encode(mpot+"","utf-8")+ "&sensor_id="+ URLEncoder.encode(msensor+"","utf-8");
                 String url = "http://192.168.191.1:8000/get_sensorDatas/?"+ data;
-                result = connection.Login_Regest(url);
+                result = connection.URLGet_sensorDatas(url);
+                JSONObject jsonstr = new JSONObject(result);
+                numberOfPoints = jsonstr.getInt("msensor_datas_num");
+                JSONArray datas = jsonstr.getJSONArray("msensor_datas");
+                //msensorDatas  = new double[Datasnum];
+                for(int i = 0;i < datas.length();i++){
+                    sensorDatasTab[i] = (float)datas.getDouble(i);
+                    if(max < sensorDatasTab[i]){
+                        max = sensorDatasTab[i];
+                    }
+                    if(min > sensorDatasTab[i]){
+                        min = sensorDatasTab[i];
+                    }
+                    Log.i("NET_Get_flowerpots",sensorDatasTab[i]+"");
+                }
             } catch (InterruptedException e) {
                 return false;
             }catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
-            //TODO:获取数据成功后在图表中显示
+
             return true;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            //showProgress(false);
+            showProgress(false);
+            maxY = (int) max + 1;
+            minY = (int)min - 1;
+            String AxisYName = "ERROR";
             if (success) {
-                //finish();
+                //TODO:获取数据成功后在图表中显示
+                toggleLabels();
+                switch (msensor){
+                    case 1:
+                        AxisYName = "温度";
+                        break;
+                    case 2:
+                        AxisYName = "土壤湿度";
+                        break;
+                    case 3:
+                        AxisYName = "二氧化碳";
+                        break;
+                    case 4:
+                        AxisYName = "光照强度";
+                        break;
+                }
+                generateData(AxisYName);
+                // Disable viewport recalculations, see toggleCubic() method for more info.
+                chart.setViewportCalculationEnabled(false);
+
+                resetViewport(minY,maxY,numberOfPoints);
             } else {
 
             }
@@ -438,7 +501,7 @@ public class get_sensor_chart extends Fragment {
         @Override
         protected void onCancelled() {
             mAuthTask = null;
-            //showProgress(false);
+            showProgress(false);
         }
     }
 }
