@@ -38,7 +38,11 @@ import android.widget.TextView;
 
 import com.btflowerpot.btflowerpot.netWork.connection;
 
+import org.apache.commons.codec.binary.Base64;
+
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -267,7 +271,36 @@ public class LoginActivity extends AppCompatActivity {
         private final static String HTML_URL = "http://192";
         UserLoginTask(String email, String password) {
             mEmail = email;
-            mPassword = password;
+            mPassword = getMD5(password);
+        }
+        public  String byteArrayToHex(byte[] byteArray) {
+            // 首先初始化一个字符数组，用来存放每个16进制字符
+            char[] hexDigits = {'0','1','2','3','4','5','6','7','8','9', 'a','b','c','d','e','f' };
+            // new一个字符数组，这个就是用来组成结果字符串的（解释一下：一个byte是八位二进制，也就是2位十六进制字符（2的8次方等于16的2次方））
+            char[] resultCharArray =new char[byteArray.length * 2];
+            // 遍历字节数组，通过位运算（位运算效率高），转换成字符放到字符数组中去
+            int index = 0;
+            for (byte b : byteArray) {
+                resultCharArray[index++] = hexDigits[b>>> 4 & 0xf];
+                resultCharArray[index++] = hexDigits[b& 0xf];
+            }
+            // 字符数组组合成字符串返回
+            return new String(resultCharArray);
+        }
+        private String getMD5(String val) {
+            try {
+
+                byte [] buf = val.getBytes();
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                md5.update(buf);
+                byte [] tmp = md5.digest();
+                System.out.println("-------MD5-------" + byteArrayToHex(tmp));
+
+                return byteArrayToHex(tmp);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return val;
         }
 
         @Override
@@ -277,7 +310,9 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 // Simulate network access.
                 String data = "user_name=" + URLEncoder.encode(mEmail, "utf-8") + "&user_password="+ URLEncoder.encode(mPassword,"utf-8");
-                String url = "http://192.168.191.1:8000/login_regest/?"+ data;
+               //本地测试地址
+               String url = "http://192.168.191.1:8000/login_regest/?"+ data;
+                //String url = "http://flowerpot.applinzi.com/login_regest/?"+ data;
                 result = connection.Login_Regest(url);
             } catch (InterruptedException e) {
                 return false;
@@ -294,12 +329,21 @@ public class LoginActivity extends AppCompatActivity {
                     try {
                         String data = "user_name=" + URLEncoder.encode(mEmail, "utf-8");
                         String url = "http://192.168.191.1:8000/get_flowerpots/?" + data;
+                        //String url = "http://flowerpot.applinzi.com/get_flowerpots/?"+ data;
                         int [] flowerpots = connection.URLGet_flowerpot(url);
-                        int i = 0;
-                        for(i = 0;i < flowerpots.length-1;i++){
-                            mflowerpots += flowerpots[i]+",";
+                        if(flowerpots.length == 0){
+                            mflowerpots =null;
                         }
-                        mflowerpots += flowerpots[i];
+                        else
+                        {
+                            int i = 0;
+                            for(i = 0;i < flowerpots.length-1;i++){
+                                mflowerpots += flowerpots[i]+",";
+                            }
+                            if(i!=0){
+                            mflowerpots += flowerpots[i];
+                            }
+                        }
                     }catch (Exception e) {
                         e.printStackTrace();
                         return false;

@@ -38,6 +38,7 @@
 
             </TableRow>
             <View
+                android:id="@+id/Tem_row_view"
                 android:layout_height="1dip"
                 android:background="#B7B7B7" />
             <TableRow android:id="@+id/Tem_row"
@@ -61,6 +62,7 @@
                     android:background="#00000000"/>
             </TableRow>
             <View
+                android:id="@+id/Moi_row_view"
                 android:layout_height="1dip"
                 android:background="#B7B7B7" />
             <TableRow android:id="@+id/Moi_row"
@@ -84,6 +86,7 @@
                     android:background="#00000000"/>
             </TableRow>
             <View
+                android:id="@+id/Co2_row_view"
                 android:layout_height="1dip"
                 android:background="#B7B7B7" />
             <TableRow android:id="@+id/Co2_row"
@@ -107,6 +110,7 @@
                     android:background="#00000000"/>
             </TableRow>
             <View
+                android:id="@+id/Lig_row_view"
                 android:layout_height="1dip"
                 android:background="#B7B7B7" />
             <TableRow android:id="@+id/Lig_row"
@@ -134,6 +138,7 @@
                     android:layout_height="wrap_content" />
             </TableRow>
             <View
+                android:id="@+id/settime_row_view"
                 android:layout_height="1dip"
                 android:background="#B7B7B7" />
             <TableRow android:id="@+id/settime_row"
@@ -144,6 +149,7 @@
                     android:text="设置时间"/>
             </TableRow>
             <View
+                android:id="@+id/gettime_row_view"
                 android:layout_height="1dip"
                 android:background="#B7B7B7" />
             <TableRow android:id="@+id/gettime_row"
@@ -154,6 +160,7 @@
                     android:text="获取时间"/>
             </TableRow>
             <View
+                android:id="@+id/gettext_row_view"
                 android:layout_height="1dip"
                 android:background="#B7B7B7" />
             <TableRow android:id="@+id/gettext_row"

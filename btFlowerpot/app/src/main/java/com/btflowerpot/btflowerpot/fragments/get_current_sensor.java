@@ -59,12 +59,22 @@ public class get_current_sensor extends Fragment {
     private BTDataBaseHelper dbHelper;
     //UI上的零件
     private static TextView mTitle;
+
+    private TableRow gettext_row;
     private TableRow settime_row;
     private TableRow gettime_row;
     private TableRow Tem_row ;
     private TableRow Moi_row ;
     private TableRow Co2_row ;
     private TableRow Lig_row ;
+
+    private View gettext_row_view;
+    private View settime_row_view;
+    private View gettime_row_view;
+    private View Tem_row_view;
+    private View Moi_row_view;
+    private View Co2_row_view ;
+    private View Lig_row_view;
 
     private Button settime_btn;
     private Button gettime_btn;
@@ -91,6 +101,22 @@ public class get_current_sensor extends Fragment {
 
         View v = inflater.inflate(R.layout.get_current_sensor, container, false);
 
+        gettext_row_view = (View)v.findViewById(R.id.gettext_row_view);
+        settime_row_view = (View)v.findViewById(R.id.settime_row_view);
+        gettime_row_view = (View)v.findViewById(R.id.gettime_row_view);
+        Tem_row_view = (View)v.findViewById(R.id.Tem_row_view);
+        Moi_row_view = (View)v.findViewById(R.id.Moi_row_view);
+        Co2_row_view = (View)v.findViewById(R.id.Co2_row_view);
+        Lig_row_view = (View)v.findViewById(R.id.Lig_row_view);
+
+        gettext_row = (TableRow)v.findViewById(R.id.gettext_row);
+        settime_row = (TableRow)v.findViewById(R.id.settime_row);
+        gettime_row = (TableRow)v.findViewById(R.id.gettime_row);
+        Tem_row  = (TableRow)v.findViewById(R.id.Tem_row);
+        Moi_row = (TableRow)v.findViewById(R.id.Moi_row);
+        Co2_row = (TableRow)v.findViewById(R.id.Co2_row);
+        Lig_row = (TableRow)v.findViewById(R.id.Lig_row);
+
         Tem_btn = (Button)v.findViewById(R.id.Tem_btn);
         Moi_btn = (Button)v.findViewById(R.id.Moi_btn);
         Co2_btn = (Button)v.findViewById(R.id.Co2_btn);
@@ -104,6 +130,8 @@ public class get_current_sensor extends Fragment {
         Co2_text = (TextView)v.findViewById(R.id.Co2);
         Lig_text = (TextView)v.findViewById(R.id.Light);
         Switch sss  = (Switch)v.findViewById(R.id.switchView);
+
+        Visible_all_row();
         sss.setOncheckListener(new Switch.OnCheckListener() {
             @Override
             public void onCheck(Switch view, boolean check) {
@@ -126,9 +154,41 @@ public class get_current_sensor extends Fragment {
     }
     void Invisible_all_row(){
         //TODO:将所有的普通行隐藏，设置行显示
+        gettext_row_view.setVisibility(View.GONE);
+        gettime_row_view.setVisibility(View.GONE);
+        Tem_row_view.setVisibility(View.GONE);
+        Moi_row_view.setVisibility(View.GONE);
+        Co2_row_view.setVisibility(View.GONE);
+        Lig_row_view.setVisibility(View.GONE);
+
+        gettext_row.setVisibility(View.GONE);
+        gettime_row.setVisibility(View.GONE);
+        Tem_row.setVisibility(View.GONE);
+        Moi_row.setVisibility(View.GONE);
+        Co2_row.setVisibility(View.GONE);
+        Lig_row.setVisibility(View.GONE);
+
+        settime_row.setVisibility(View.VISIBLE);
+        settime_row_view.setVisibility(View.VISIBLE);
     }
     void Visible_all_row(){
         //TODO:将所有的普通行显示，设置行隐藏
+        gettext_row_view.setVisibility(View.VISIBLE);
+        gettime_row_view.setVisibility(View.VISIBLE);
+        Tem_row_view.setVisibility(View.VISIBLE);
+        Moi_row_view.setVisibility(View.VISIBLE);
+        Co2_row_view.setVisibility(View.VISIBLE);
+        Lig_row_view.setVisibility(View.VISIBLE);
+
+        gettext_row.setVisibility(View.VISIBLE);
+        gettime_row.setVisibility(View.VISIBLE);
+        Tem_row.setVisibility(View.VISIBLE);
+        Moi_row.setVisibility(View.VISIBLE);
+        Co2_row.setVisibility(View.VISIBLE);
+        Lig_row.setVisibility(View.VISIBLE);
+
+        settime_row.setVisibility(View.GONE);
+        settime_row_view.setVisibility(View.GONE);
     }
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

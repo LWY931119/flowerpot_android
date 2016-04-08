@@ -54,14 +54,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -176,20 +169,13 @@ public class MainActivity extends AppCompatActivity
             userNameTextView.setText("请您登录，体验完整功能。");
             navigationView.getMenu().getItem(0).setTitle("登录");
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    //如果之前登陆过也要验证一下，防止在别的地方改过密码
     Runnable LoginTask = new Runnable() {
 
         @Override
@@ -201,7 +187,9 @@ public class MainActivity extends AppCompatActivity
             try {
                 // Simulate network access.
                 String data = "user_name=" + URLEncoder.encode(name, "utf-8") + "&user_password="+ URLEncoder.encode(password,"utf-8");
+                //本地测试地址
                 String url = "http://192.168.191.1:8000/login_regest/?"+ data;
+                //String url = "http://flowerpot.applinzi.com/login_regest/?"+ data;
                 Log.i("MainActivity",url);
                 result = connection.Login_Regest(url);
             } catch (InterruptedException e) {

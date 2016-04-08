@@ -35,8 +35,8 @@ import java.net.URLEncoder;
  */
 public class get_sensor_text extends Fragment {
     private UPloadTask mAuthTask = null;
-    private Button select;
-    private Button addbtn;
+    private Button deleteBtn;
+    private Button addBtn;
     private TextView all;
     private static final String TAG = "BluetoothChat";
     private BTDataBaseHelper dbHelper;
@@ -49,8 +49,8 @@ public class get_sensor_text extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.get_sensor_text, container, false);
         all = (TextView) v.findViewById(R.id.all);
-        select = (Button)v.findViewById(R.id.btn1);
-        addbtn  = (Button)v.findViewById(R.id.btn2);
+        deleteBtn = (Button)v.findViewById(R.id.btn1);
+        addBtn  = (Button)v.findViewById(R.id.btn2);
         mSensorDatasFormView = v.findViewById(R.id.sensor_datas_form);
         mProgressView = v.findViewById(R.id.sensor_datas_progress);
         dbHelper = new BTDataBaseHelper(this.getContext(), "btDB.db3", 1);
@@ -63,24 +63,13 @@ public class get_sensor_text extends Fragment {
             all.append(cur.getInt(0)+" :"+dataString+" "+ cur.getString(2)+"\n");
             ij++;
         }
-        select.setOnClickListener(new View.OnClickListener() {
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                //p.show();
-                new Thread(new Runnable() {
-
-                    public void run() {
-                /*        operation operaton = new operation();
-                        String[] result = operaton.select_all();
-                        //Log.i("test", result);
-                        Message msg = new Message();
-                        msg.obj = result;
-                        handler.sendMessage(msg);
-                        //p.dismiss();*/
-                    }
-                }).start();
+                //删除本地数据库里所有数据
+                dbHelper.getWritableDatabase().execSQL("delete from data_table");
             }
         });
-        addbtn.setOnClickListener(new View.OnClickListener() {
+        addBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 showProgress(true);
                 mAuthTask = new UPloadTask();
@@ -160,7 +149,7 @@ public class get_sensor_text extends Fragment {
                 while(cur.moveToNext())
                 {
                     ij++;
-                    if(ij == 70)break;
+                    //if(ij == 70)break;
                     String dataString = cur.getString(1).replace("text:","");
                     sensor_datas = dataString.split("\\+");
                     String[] tags = new String[]{};

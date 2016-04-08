@@ -45,6 +45,7 @@ public class connection {
 
     public  static int UPLoadSensorDatas(String datas) throws Exception{
         String path = "http://192.168.191.1:8000/upload_sensortext/";
+        //String path = "http://flowerpot.applinzi.com/upload_sensortext/";
         URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         // 设置连接超时为5秒
