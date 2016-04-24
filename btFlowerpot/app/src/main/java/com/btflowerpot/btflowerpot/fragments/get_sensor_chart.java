@@ -370,7 +370,7 @@ public class get_sensor_chart extends Fragment {
                     if (pot_spinner.getSelectedItemId() != 0 && sensor_spinner.getSelectedItemId() != 0) {
                         String CurrentTimeStr = chart_time.getText().toString();
                         int mpot_id = flowerpot_ids[(int) pot_spinner.getSelectedItemId()-1];
-                        Log.e("get_sensor_chart", "您选择的是：" + pot_adapter.getItem(arg2) +
+                        Log.e("get_sensor_chart", "您选择的是：" + sensor_adapter.getItem(arg2) +
                                 "pot_id: " + mpot_id + "sensor_id: " + sensor_spinner.getSelectedItemId());
                         showProgress(true);
                         mAuthTask = new GetDatasTask(CurrentTimeStr, mpot_id, (int) sensor_spinner.getSelectedItemId());
